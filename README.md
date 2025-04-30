@@ -65,7 +65,7 @@ DeviceProcessEvents
 
 ### 3. Searched the `DeviceProcessEvents` Table for TOR Browser Execution
 
-Searched the DeviceProcessEvents table for any indication that user “employee” actually opened the tor browser. There was evidence that they did open it at 2025-04-27T16:51:41.4899266Z
+Searched the DeviceProcessEvents table for any indication that user “thelab” actually opened the tor browser. There was evidence that they did open it at 2025-04-27T16:51:41.4899266Z
 There were several other instances of firefox.exe (tor) as well as tor.exe spawned afterwards
 
 **Query used to locate events:**
