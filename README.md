@@ -40,7 +40,7 @@ DeviceFileEvents
 | project FileName, InitiatingProcessAccountName, Timestamp, SHA256, DeviceName, ActionType, FolderPath, Account = InitiatingProcessAccountName
 
 ```
-<![image](https://github.com/user-attachments/assets/88aebc80-f219-401c-b740-f9f16db47617)">
+<![image](https://github.com/user-attachments/assets/5d60715d-f648-4b1d-9191-d11e7cff097f)">
 
 ---
 
