@@ -85,20 +85,22 @@ DeviceProcessEvents
 
 ### 4. Searched the `DeviceNetworkEvents` Table for TOR Network Connections
 
-Searched for any indication the TOR browser was used to establish a connection using any of the known TOR ports. At `2024-11-08T22:18:01.1246358Z`, an employee on the "threat-hunt-lab" device successfully established a connection to the remote IP address `176.198.159.33` on port `9001`. The connection was initiated by the process `tor.exe`, located in the folder `c:\users\employee\desktop\tor browser\browser\torbrowser\tor\tor.exe`. There were a couple of other connections to sites over port `443`.
+Queried the DeviceNetworkEvents table for evidence of Tor Browser activity by filtering for known Tor-related ports at the timestamp 2025-04-27T16:52:28.498756Z. Findings show that on April 27, 2025, at 12:52:28 PM, the user account "thelab" on device "sjsentinel" successfully established a network connection (ConnectionSuccess) from the process tor.exe, located at C:\Users\thelab\Desktop\Tor Browser\Browser\TorBrowser\Tor\, to the external IP address 5.135.83.4 over port 9001. As port 9001 is commonly used for Tor Onion Routing relays, this strongly suggests the system initiated outbound communication over the Tor 
+anonymity network.
 
 **Query used to locate events:**
 
 ```kql
-DeviceNetworkEvents  
-| where DeviceName == "threat-hunt-lab"  
-| where InitiatingProcessAccountName != "system"  
-| where InitiatingProcessFileName in ("tor.exe", "firefox.exe")  
-| where RemotePort in ("9001", "9030", "9040", "9050", "9051", "9150", "80", "443")  
-| project Timestamp, DeviceName, InitiatingProcessAccountName, ActionType, RemoteIP, RemotePort, RemoteUrl, InitiatingProcessFileName, InitiatingProcessFolderPath  
+let VMName = "sjsentinel";
+DeviceNetworkEvents
+| where DeviceName == "sjsentinel"
+| project Timestamp, InitiatingProcessAccountName, DeviceName, ActionType, RemoteIP, RemotePort, RemoteUrl, InitiatingProcessFolderPath
 | order by Timestamp desc
+| where ActionType == "ConnectionSuccess"
+| where InitiatingProcessAccountName != "system"
+| where RemotePort in (9001, 9050, 9150)
 ```
-<img width="1212" alt="image" src="https://github.com/user-attachments/assets/87a02b5b-7d12-4f53-9255-f5e750d0e3cb">
+<![image](https://github.com/user-attachments/assets/958b7c1d-7f05-4126-bc41-3a1fe9eeb08d)>
 
 ---
 
