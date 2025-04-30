@@ -40,7 +40,7 @@ DeviceFileEvents
 | project FileName, InitiatingProcessAccountName, Timestamp, SHA256, DeviceName, ActionType, FolderPath, Account = InitiatingProcessAccountName
 
 ```
-<![image](https://github.com/user-attachments/assets/5d60715d-f648-4b1d-9191-d11e7cff097f)">
+![image](https://github.com/user-attachments/assets/5d60715d-f648-4b1d-9191-d11e7cff097f)"
 
 ---
 
@@ -59,7 +59,7 @@ DeviceProcessEvents
 | project Timestamp, ActionType, FileName, FolderPath, SHA256, ProcessCommandLine, AccountName
 
 ```
-<![image](https://github.com/user-attachments/assets/ecc0db73-4ab9-4b0d-ad6a-9d8512b8179e)>
+![image](https://github.com/user-attachments/assets/ecc0db73-4ab9-4b0d-ad6a-9d8512b8179e)
 
 ---
 
@@ -79,7 +79,7 @@ DeviceProcessEvents
 | project FileName, DeviceName, AccountName, FolderPath, ProcessCommandLine, ActionType, Timestamp, SHA256
 
 ```
-<![image](https://github.com/user-attachments/assets/40102780-44de-4483-b310-d09cbe03c2a5)>
+![image](https://github.com/user-attachments/assets/40102780-44de-4483-b310-d09cbe03c2a5)
 
 ---
 
@@ -101,13 +101,14 @@ DeviceNetworkEvents
 | where RemotePort in (9001, 9050, 9150, 9051, 9040, 9030)
 
 ```
-<![image](https://github.com/user-attachments/assets/2c0525de-1df5-48c5-a24b-29ab3dfabaf6)>
+![image](https://github.com/user-attachments/assets/2c0525de-1df5-48c5-a24b-29ab3dfabaf6)
 
 ---
 
 ## Chronological Event Timeline 
 
-Step 1: 12:48:38 PM – Download Activity
+Step 1: 
+12:48:38 PM – Download Activity
 The user "thelab" renamed or moved the file tor-browser-windows-x86_64-portable-14.5.exe into the Downloads folder.
  📁 Path: C:\Users\thelab\Downloads\
  🔐 ActionType: FileRenamed
@@ -115,7 +116,8 @@ The user "thelab" renamed or moved the file tor-browser-windows-x86_64-portable-
 
 
 
-Step 2: 12:51:41 PM – Silent Execution of TOR Installer
+Step 2: 
+12:51:41 PM – Silent Execution of TOR Installer
 The same executable was silently run using the /S flag (silent install), indicating intentional, discreet installation.
  ⚙️ ActionType: ProcessCreated
  🧑‍💻 User: thelab
@@ -123,7 +125,8 @@ The same executable was silently run using the /S flag (silent install), indicat
 
 
 
-Step 3: 12:51:42 PM – TOR Files Deployed to Desktop
+Step 3: 
+12:51:42 PM – TOR Files Deployed to Desktop
 Tor-related files including firefox.exe and firefox.VisualElementsManifest.xml were created in the Desktop Tor Browser folder.
  📁 Path: C:\Users\thelab\Desktop\Tor Browser\Browser\...
  📄 ActionType: FileCreated
@@ -131,14 +134,16 @@ Tor-related files including firefox.exe and firefox.VisualElementsManifest.xml w
 
 
 
-Step 4: 12:52:28 PM – Outbound Connection to Tor Relay Node
+Step 4: 
+12:52:28 PM – Outbound Connection to Tor Relay Node
 The process tor.exe established an outbound connection to 5.135.83.4 over port 9001, a known Tor relay port.
  🌐 ActionType: ConnectionSuccess
  ⚙️ Process Path: C:\Users\thelab\Desktop\Tor Browser\Browser\TorBrowser\Tor\
 
 
 
-Step 5: 12:52:48 PM – Firefox Proxy Connection via TOR
+Step 5: 
+12:52:48 PM – Firefox Proxy Connection via TOR
 The Tor Browser's firefox.exe initiated a local connection to 127.0.0.1 over port 9150, indicating active Tor traffic tunneling.
  🧑‍💻 User: thelab
  ⚙️ Initiating Process: firefox.exe
@@ -146,7 +151,8 @@ The Tor Browser's firefox.exe initiated a local connection to 127.0.0.1 over por
 
 
 
-Step 6: 5:04:09 PM – Suspicious File Creation
+Step 6: 
+5:04:09 PM – Suspicious File Creation
 A file named tor-shopping-list.txt was created shortly after Tor usage. This may indicate use of the browser for non-work-related or potentially inappropriate purposes.
  📄 File Type: .txt
  📍 Path and details should be further examined in context.
