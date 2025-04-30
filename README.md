@@ -94,73 +94,74 @@ anonymity network.
 let VMName = "sjsentinel";
 DeviceNetworkEvents
 | where DeviceName == "sjsentinel"
-| project Timestamp, InitiatingProcessAccountName, DeviceName, ActionType, RemoteIP, RemotePort, RemoteUrl, InitiatingProcessFolderPath
-| order by Timestamp desc
+| project Timestamp, InitiatingProcessAccountName, DeviceName, ActionType, RemoteIP, RemotePort, RemoteUrl, InitiatingProcessFolderPath,InitiatingProcessFileName
+| order by Timestamp desc 
 | where ActionType == "ConnectionSuccess"
 | where InitiatingProcessAccountName != "system"
-| where RemotePort in (9001, 9050, 9150)
+| where RemotePort in (9001, 9050, 9150, 9051, 9040, 9030)
+
 ```
-<![image](https://github.com/user-attachments/assets/958b7c1d-7f05-4126-bc41-3a1fe9eeb08d)>
+<![image](https://github.com/user-attachments/assets/2c0525de-1df5-48c5-a24b-29ab3dfabaf6)>
 
 ---
 
 ## Chronological Event Timeline 
 
-### 1. File Download - TOR Installer
+Step 1: 12:48:38 PM – Download Activity
+The user "thelab" renamed or moved the file tor-browser-windows-x86_64-portable-14.5.exe into the Downloads folder.
+ 📁 Path: C:\Users\thelab\Downloads\
+ 🔐 ActionType: FileRenamed
+ 🔍 Hash: 3a678091f74517da...
 
-- **Timestamp:** `2024-11-08T22:14:48.6065231Z`
-- **Event:** The user "employee" downloaded a file named `tor-browser-windows-x86_64-portable-14.0.1.exe` to the Downloads folder.
-- **Action:** File download detected.
-- **File Path:** `C:\Users\employee\Downloads\tor-browser-windows-x86_64-portable-14.0.1.exe`
 
-### 2. Process Execution - TOR Browser Installation
 
-- **Timestamp:** `2024-11-08T22:16:47.4484567Z`
-- **Event:** The user "employee" executed the file `tor-browser-windows-x86_64-portable-14.0.1.exe` in silent mode, initiating a background installation of the TOR Browser.
-- **Action:** Process creation detected.
-- **Command:** `tor-browser-windows-x86_64-portable-14.0.1.exe /S`
-- **File Path:** `C:\Users\employee\Downloads\tor-browser-windows-x86_64-portable-14.0.1.exe`
+Step 2: 12:51:41 PM – Silent Execution of TOR Installer
+The same executable was silently run using the /S flag (silent install), indicating intentional, discreet installation.
+ ⚙️ ActionType: ProcessCreated
+ 🧑‍💻 User: thelab
+ 📁 Path: C:\Users\thelab\Downloads\...
 
-### 3. Process Execution - TOR Browser Launch
 
-- **Timestamp:** `2024-11-08T22:17:21.6357935Z`
-- **Event:** User "employee" opened the TOR browser. Subsequent processes associated with TOR browser, such as `firefox.exe` and `tor.exe`, were also created, indicating that the browser launched successfully.
-- **Action:** Process creation of TOR browser-related executables detected.
-- **File Path:** `C:\Users\employee\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe`
 
-### 4. Network Connection - TOR Network
+Step 3: 12:51:42 PM – TOR Files Deployed to Desktop
+Tor-related files including firefox.exe and firefox.VisualElementsManifest.xml were created in the Desktop Tor Browser folder.
+ 📁 Path: C:\Users\thelab\Desktop\Tor Browser\Browser\...
+ 📄 ActionType: FileCreated
+ 🔍 Firefox SHA256: 3613fc46eab116864...
 
-- **Timestamp:** `2024-11-08T22:18:01.1246358Z`
-- **Event:** A network connection to IP `176.198.159.33` on port `9001` by user "employee" was established using `tor.exe`, confirming TOR browser network activity.
-- **Action:** Connection success.
-- **Process:** `tor.exe`
-- **File Path:** `c:\users\employee\desktop\tor browser\browser\torbrowser\tor\tor.exe`
 
-### 5. Additional Network Connections - TOR Browser Activity
 
-- **Timestamps:**
-  - `2024-11-08T22:18:08Z` - Connected to `194.164.169.85` on port `443`.
-  - `2024-11-08T22:18:16Z` - Local connection to `127.0.0.1` on port `9150`.
-- **Event:** Additional TOR network connections were established, indicating ongoing activity by user "employee" through the TOR browser.
-- **Action:** Multiple successful connections detected.
+Step 4: 12:52:28 PM – Outbound Connection to Tor Relay Node
+The process tor.exe established an outbound connection to 5.135.83.4 over port 9001, a known Tor relay port.
+ 🌐 ActionType: ConnectionSuccess
+ ⚙️ Process Path: C:\Users\thelab\Desktop\Tor Browser\Browser\TorBrowser\Tor\
 
-### 6. File Creation - TOR Shopping List
 
-- **Timestamp:** `2024-11-08T22:27:19.7259964Z`
-- **Event:** The user "employee" created a file named `tor-shopping-list.txt` on the desktop, potentially indicating a list or notes related to their TOR browser activities.
-- **Action:** File creation detected.
-- **File Path:** `C:\Users\employee\Desktop\tor-shopping-list.txt`
+
+Step 5: 12:52:48 PM – Firefox Proxy Connection via TOR
+The Tor Browser's firefox.exe initiated a local connection to 127.0.0.1 over port 9150, indicating active Tor traffic tunneling.
+ 🧑‍💻 User: thelab
+ ⚙️ Initiating Process: firefox.exe
+ 🌐 ActionType: ConnectionSuccess
+
+
+
+Step 6: 5:04:09 PM – Suspicious File Creation
+A file named tor-shopping-list.txt was created shortly after Tor usage. This may indicate use of the browser for non-work-related or potentially inappropriate purposes.
+ 📄 File Type: .txt
+ 📍 Path and details should be further examined in context.
+
 
 ---
 
 ## Summary
 
-The user "employee" on the "threat-hunt-lab" device initiated and completed the installation of the TOR browser. They proceeded to launch the browser, establish connections within the TOR network, and created various files related to TOR on their desktop, including a file named `tor-shopping-list.txt`. This sequence of activities indicates that the user actively installed, configured, and used the TOR browser, likely for anonymous browsing purposes, with possible documentation in the form of the "shopping list" file.
+The user "thelab" deliberately downloaded and executed the Tor Browser using a silent installer flag. Tor-related files were deployed on the desktop, and soon after, confirmed outbound Tor network traffic was observed. The device connected to a known Tor relay IP on port 9001, followed by proxy activity over 9150, both strongly confirming active Tor session usage. Additionally, the creation of a file named tor-shopping-list.txt suggests potential misuse of the browser for storing or organizing activity that may have occurred through the Tor network.
 
 ---
 
 ## Response Taken
 
-TOR usage was confirmed on the endpoint `threat-hunt-lab` by the user `employee`. The device was isolated, and the user's direct manager was notified.
+TOR usage was confirmed on endpoint sjsentinel by the user thelab. The device was isolated and the user's direct manager was notified.
 
 ---
