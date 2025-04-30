@@ -108,6 +108,7 @@ DeviceNetworkEvents
 ## Chronological Event Timeline 
 
 Step 1: 
+
 12:48:38 PM – Download Activity
 The user "thelab" renamed or moved the file tor-browser-windows-x86_64-portable-14.5.exe into the Downloads folder.
  📁 Path: C:\Users\thelab\Downloads\
@@ -117,6 +118,7 @@ The user "thelab" renamed or moved the file tor-browser-windows-x86_64-portable-
 
 
 Step 2: 
+
 12:51:41 PM – Silent Execution of TOR Installer
 The same executable was silently run using the /S flag (silent install), indicating intentional, discreet installation.
  ⚙️ ActionType: ProcessCreated
@@ -126,6 +128,7 @@ The same executable was silently run using the /S flag (silent install), indicat
 
 
 Step 3: 
+
 12:51:42 PM – TOR Files Deployed to Desktop
 Tor-related files including firefox.exe and firefox.VisualElementsManifest.xml were created in the Desktop Tor Browser folder.
  📁 Path: C:\Users\thelab\Desktop\Tor Browser\Browser\...
@@ -135,6 +138,7 @@ Tor-related files including firefox.exe and firefox.VisualElementsManifest.xml w
 
 
 Step 4: 
+
 12:52:28 PM – Outbound Connection to Tor Relay Node
 The process tor.exe established an outbound connection to 5.135.83.4 over port 9001, a known Tor relay port.
  🌐 ActionType: ConnectionSuccess
@@ -143,6 +147,7 @@ The process tor.exe established an outbound connection to 5.135.83.4 over port 9
 
 
 Step 5: 
+
 12:52:48 PM – Firefox Proxy Connection via TOR
 The Tor Browser's firefox.exe initiated a local connection to 127.0.0.1 over port 9150, indicating active Tor traffic tunneling.
  🧑‍💻 User: thelab
@@ -152,6 +157,7 @@ The Tor Browser's firefox.exe initiated a local connection to 127.0.0.1 over por
 
 
 Step 6: 
+
 5:04:09 PM – Suspicious File Creation
 A file named tor-shopping-list.txt was created shortly after Tor usage. This may indicate use of the browser for non-work-related or potentially inappropriate purposes.
  📄 File Type: .txt
