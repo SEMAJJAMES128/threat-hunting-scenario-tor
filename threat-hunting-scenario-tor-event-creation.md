@@ -79,16 +79,6 @@ DeviceFileEvents
 - **Author Contact**: https://www.linkedin.com/in/semajjames128
 - **Date**: 04/29/2025
 
-## Validated By:
-- **Reviewer Name**: 
-- **Reviewer Contact**: 
-- **Validation Date**: 
-
----
-
-## Additional Notes:
-- **None**
-
 ---
 
 ## Revision History:
