@@ -101,61 +101,35 @@ DeviceFileEvents
 
 ## Chronological Event Timeline 
 
-Step 1: 
+🟩 Step 1: PsExec Download and Execution
+PsExec.exe was executed on host sjpay2 to simulate lateral movement using the command:
+PsExec.exe \\localhost cmd.exe
 
-12:48:38 PM – Download Activity
-The user "thelab" renamed or moved the file tor-browser-windows-x86_64-portable-14.5.exe into the Downloads folder.
- 📁 Path: C:\Users\thelab\Downloads\
- 🔐 ActionType: FileRenamed
- 🔍 Hash: 3a678091f74517da...
+Microsoft Defender for Endpoint logged the execution of PsExec.exe and its service psexesvc.exe.
 
+🟩 Step 2: PsExec Service Spawned Remote Shell
+psexesvc.exe launched a new instance of cmd.exe on the same device (sjpay2).
 
+This shell ran with elevated privileges, simulating post-exploitation access.
 
-Step 2: 
+🟩 Step 3: CMD Launched PowerShell
+Within the remote shell session, cmd.exe launched powershell.exe, continuing the chain of execution.
 
-12:51:41 PM – Silent Execution of TOR Installer
-The same executable was silently run using the /S flag (silent install), indicating intentional, discreet installation.
- ⚙️ ActionType: ProcessCreated
- 🧑‍💻 User: thelab
- 📁 Path: C:\Users\thelab\Downloads\...
+PowerShell was used to run attacker-simulated commands.
 
+🟨 Step 4: Attempted File Drop via PowerShell
+Inside the PowerShell session, the following command was executed:
 
+powershell 
 
-Step 3: 
+Set-Content -Path "C:\Users\Public\psexec_logged.txt" -Value "test"
+The file was confirmed to exist on disk in C:\Users\Public, indicating successful file creation from the attacker’s perspective.
 
-12:51:42 PM – TOR Files Deployed to Desktop
-Tor-related files including firefox.exe and firefox.VisualElementsManifest.xml were created in the Desktop Tor Browser folder.
- 📁 Path: C:\Users\thelab\Desktop\Tor Browser\Browser\...
- 📄 ActionType: FileCreated
- 🔍 Firefox SHA256: 3613fc46eab116864...
+🟥 Step 5: File Creation Not Logged by Defender
+Querying DeviceFileEvents for the expected .txt file yielded no results.
 
+This highlights a potential telemetry gap where non-malicious file creations through remote shells may go unlogged unless flagged or audited explicitly.
 
-
-Step 4: 
-
-12:52:28 PM – Outbound Connection to Tor Relay Node
-The process tor.exe established an outbound connection to 5.135.83.4 over port 9001, a known Tor relay port.
- 🌐 ActionType: ConnectionSuccess
- ⚙️ Process Path: C:\Users\thelab\Desktop\Tor Browser\Browser\TorBrowser\Tor\
-
-
-
-Step 5: 
-
-12:52:48 PM – Firefox Proxy Connection via TOR
-The Tor Browser's firefox.exe initiated a local connection to 127.0.0.1 over port 9150, indicating active Tor traffic tunneling.
- 🧑‍💻 User: thelab
- ⚙️ Initiating Process: firefox.exe
- 🌐 ActionType: ConnectionSuccess
-
-
-
-Step 6: 
-
-5:04:09 PM – Suspicious File Creation
-A file named tor-shopping-list.txt was created shortly after Tor usage. This may indicate use of the browser for non-work-related or potentially inappropriate purposes.
- 📄 File Type: .txt
- 📍 Path and details should be further examined in context.
 
 
 ---
