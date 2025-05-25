@@ -43,22 +43,23 @@ DeviceProcessEvents
 
 ---
 
-### 2. Searched the `DeviceProcessEvents` Table
+### 2. Investigated What Was Spawned by PsExec
 
-Queried the DeviceProcessEvents table for any ProcessCommandLine entries containing the string "tor-browser-windows-x86_64-portable-14.5.exe". Results show that on April 27, 2025, at 12:51 PM, the user account "thelab" executed this file from the Downloads directory using the silent install flag /S. The ActionType was ProcessCreated, confirming the file was run. The executable’s SHA256 hash is 3a678091f74517da5d9accd391107ec3732a5707770a61e22c20c5c17e37d19a. This behavior likely reflects an attempt to install or launch the Tor Browser discreetly, potentially indicating unauthorized software use or an effort to evade network visibility.
+Queried for any child processes launched by psexesvc.exe. cmd.exe was confirmed as the next link in the process chain, indicating interactive shell access via PsExec.
 
 **Query used to locate event:**
 
 ```kql
 
-let VMName = "sjsentinel";
 DeviceProcessEvents
-| where DeviceName == "sjsentinel"
-| where ProcessCommandLine has "tor-browser-windows-x86_64-portable-14.5.exe  /S"
-| project Timestamp, ActionType, FileName, FolderPath, SHA256, ProcessCommandLine, AccountName
+| where DeviceName == "sjpay2"
+| where InitiatingProcessFileName == "psexesvc.exe"
+| project Timestamp, FileName, ProcessCommandLine, AccountName, InitiatingProcessFileName
+
 
 ```
-![image](https://github.com/user-attachments/assets/ecc0db73-4ab9-4b0d-ad6a-9d8512b8179e)
+![image](https://github.com/user-attachments/assets/b58fe641-1f9f-4397-831e-fe3e3432aceb)
+
 
 ---
 
