@@ -103,6 +103,7 @@ DeviceFileEvents
 
 🟩 Step 1: PsExec Download and Execution
 PsExec.exe was executed on host sjpay2 to simulate lateral movement using the command:
+
 PsExec.exe \\localhost cmd.exe
 
 Microsoft Defender for Endpoint logged the execution of PsExec.exe and its service psexesvc.exe.
@@ -123,6 +124,7 @@ Inside the PowerShell session, the following command was executed:
 powershell 
 
 Set-Content -Path "C:\Users\Public\psexec_logged.txt" -Value "test"
+
 The file was confirmed to exist on disk in C:\Users\Public, indicating successful file creation from the attacker’s perspective.
 
 🟥 Step 5: File Creation Not Logged by Defender
