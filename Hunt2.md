@@ -66,3 +66,14 @@ DeviceFileEvents
 | where DeviceName == "sjpay2"
 | where FolderPath has "Public"
 | project Timestamp, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessCommandLine
+
+## Created By:
+- **Author Name**: Semaj Jones
+- **Author Contact**: www.linkedin.com/in/semajjames128
+- **Date**: May 25, 2025
+
+
+## Revision History:
+| **Version** | **Changes**                   | **Date**         | **Modified By**   |
+|-------------|-------------------------------|------------------|-------------------|
+| 1.0         | Initial draft                  | `May  25, 2025`  | `Semaj Jones`   
