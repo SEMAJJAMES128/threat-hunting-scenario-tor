@@ -81,25 +81,21 @@ DeviceProcessEvents
 
 ---
 
-### 4. Searched the `DeviceNetworkEvents` Table for TOR Network Connections
+### 4. Searched for File Creation Activity in Public Folder
 
-Queried the DeviceNetworkEvents table for evidence of Tor Browser activity by filtering for known Tor-related ports at the timestamp 2025-04-27T16:52:28.498756Z. Findings show that on April 27, 2025, at 12:52:28 PM, the user account "thelab" on device "sjsentinel" successfully established a network connection (ConnectionSuccess) from the process tor.exe, located at C:\Users\thelab\Desktop\Tor Browser\Browser\TorBrowser\Tor\, to the external IP address 5.135.83.4 over port 9001. As port 9001 is commonly used for Tor Onion Routing relays, this strongly suggests the system initiated outbound communication over the Tor 
-anonymity network.
+Queried DeviceFileEvents to determine if PowerShell dropped any files in the C:\Users\Public\ directory. A .txt file was manually confirmed on disk, but not logged in Defender, exposing a telemetry gap.
 
 **Query used to locate events:**
 
 ```kql
-let VMName = "sjsentinel";
-DeviceNetworkEvents
-| where DeviceName == "sjsentinel"
-| project Timestamp, InitiatingProcessAccountName, DeviceName, ActionType, RemoteIP, RemotePort, RemoteUrl, InitiatingProcessFolderPath,InitiatingProcessFileName
-| order by Timestamp desc 
-| where ActionType == "ConnectionSuccess"
-| where InitiatingProcessAccountName != "system"
-| where RemotePort in (9001, 9050, 9150, 9051, 9040, 9030)
+DeviceFileEvents
+| where DeviceName == "sjpay2"
+| where FolderPath has "Public"
+| project Timestamp, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessCommandLine;
 
 ```
-![image](https://github.com/user-attachments/assets/2c0525de-1df5-48c5-a24b-29ab3dfabaf6)
+![image](https://github.com/user-attachments/assets/8f42dc90-a656-46fc-8535-cf9af8b8b429)
+
 
 ---
 
