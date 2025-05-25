@@ -41,36 +41,43 @@
 ```kql
 // Installer name == tor-browser-windows-x86_64-portable-(version).exe
 // Detect the installer being downloaded
+let VMName = "sjsentinel";
 DeviceFileEvents
-| where FileName startswith "tor"
+| where DeviceName == "sjsentinel"
+| where FileName has_any ("tor" , "firefox")
+| where InitiatingProcessAccountName == "thelab"
+| where Timestamp >= datetime(2025-04-27T16:48:38.7199014Z)
+| order by FileSize desc
+| project FileName, InitiatingProcessAccountName, Timestamp, SHA256, DeviceName, ActionType, FolderPath, Account = InitiatingProcessAccountName
+
 
 // TOR Browser being silently installed
-// Take note of two spaces before the /S (I don't know why)
+
+let VMName = "sjsentinel";
 DeviceProcessEvents
-| where ProcessCommandLine contains "tor-browser-windows-x86_64-portable-14.0.1.exe  /S"
-| project Timestamp, DeviceName, ActionType, FileName, ProcessCommandLine
+| where DeviceName == "sjsentinel"
+| where ProcessCommandLine has "tor-browser-windows-x86_64-portable-14.5.exe  /S"
+| project Timestamp, ActionType, FileName, FolderPath, SHA256, ProcessCommandLine, AccountName
+
 
 // TOR Browser or service was successfully installed and is present on the disk
 DeviceFileEvents
-| where FileName has_any ("tor.exe", "firefox.exe")
-| project  Timestamp, DeviceName, RequestAccountName, ActionType, InitiatingProcessCommandLine
-
-// TOR Browser or service was launched
+let VMName = "sjsentinel";
 DeviceProcessEvents
-| where ProcessCommandLine has_any("tor.exe","firefox.exe")
-| project  Timestamp, DeviceName, AccountName, ActionType, ProcessCommandLine
+| where DeviceName == "sjsentinel"
+| where FileName has_any ("tor.exe", "start-tor-browser.exe", "tor-browser.exe", "tor-browser-win64.exe", "tor-browser-win32.exe", "tor-browser-windows-x86_64-portable-14.5.exe", "Tor Browser Setup.exe", "firefox.exe",
+
 
 // TOR Browser or service is being used and is actively creating network connections
+let VMName = "sjsentinel";
 DeviceNetworkEvents
-| where InitiatingProcessFileName in~ ("tor.exe", "firefox.exe")
-| where RemotePort in (9001, 9030, 9040, 9050, 9051, 9150)
-| project Timestamp, DeviceName, InitiatingProcessAccountName, InitiatingProcessFileName, RemoteIP, RemotePort, RemoteUrl
-| order by Timestamp desc
+| where DeviceName == "sjsentinel"
+| project Timestamp, InitiatingProcessAccountName, DeviceName, ActionType, RemoteIP, RemotePort, RemoteUrl, InitiatingProcessFolderPath,InitiatingProcessFileName
+| order by Timestamp desc 
+| where ActionType == "ConnectionSuccess"
+| where InitiatingProcessAccountName != "system"
+| where RemotePort in (9001, 9050, 9150, 9051, 9040, 9030)
 
-// User shopping list was created and, changed, or deleted
-DeviceFileEvents
-| where FileName contains "shopping-list.txt"
-```
 
 ---
 
