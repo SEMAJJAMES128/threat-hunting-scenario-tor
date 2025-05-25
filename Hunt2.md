@@ -1,0 +1,54 @@
+# Threat Event (Simulated Lateral Movement via PsExec)
+**Process-Based Lateral Movement and File Drop Simulation Using PsExec**
+
+## Steps the "Bad Actor" Took to Create Logs and IoCs:
+1. Downloaded and executed `PsExec.exe` from the Sysinternals suite.
+2. Ran the following command to simulate lateral movement:  
+   `PsExec.exe \\localhost cmd.exe`
+3. From the PsExec-launched `cmd.exe` shell, launched `powershell.exe`.
+4. Inside the PowerShell session, executed a file creation command:  
+   `Set-Content -Path "C:\Users\Public\psexec_logged.txt" -Value "test"`
+5. The file was successfully written to disk, but Defender for Endpoint did **not log** the file creation.
+
+---
+
+## Tables Used to Detect IoCs:
+| **Parameter**       | **Description**                                                              |
+|---------------------|------------------------------------------------------------------------------|
+| **DeviceProcessEvents** | Detected the execution of PsExec, the `psexesvc.exe` service, `cmd.exe`, and PowerShell. |
+| **DeviceFileEvents** | Searched for evidence of file creation in `C:\Users\Public`. Although the file was confirmed manually, the action was not logged in this table. |
+
+---
+
+## Related Queries:
+
+```kql
+// Step 1: Detect Execution of PsExec and Its Service Component
+DeviceProcessEvents
+| where DeviceName == "sjpay2"
+| where FileName in~ ("PsExec.exe", "psexesvc.exe")
+| project Timestamp, FileName, ProcessCommandLine, DeviceName, AccountName
+
+// Step 2: Identify the Initial Process Spawned by PsExec
+DeviceProcessEvents
+| where DeviceName == "sjpay2"
+| where InitiatingProcessFileName == "psexesvc.exe"
+| project Timestamp, FileName, ProcessCommandLine, AccountName, InitiatingProcessFileName
+
+// Step 3: Investigate Follow-on Processes Launched from cmd.exe
+DeviceProcessEvents
+| where DeviceName == "sjpay2"
+| where InitiatingProcessFileName == "cmd.exe"
+| project Timestamp, FileName, ProcessCommandLine, AccountName, InitiatingProcessFileName
+
+// Step 4: Search for File Creation Attempt by PowerShell
+DeviceFileEvents
+| where DeviceName == "sjpay2"
+| where FileName == "psexec_logged.txt"
+| project Timestamp, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessCommandLine
+
+// Step 5: View All File Events Within Public Directory for Context
+DeviceFileEvents
+| where DeviceName == "sjpay2"
+| where FolderPath has "Public"
+| project Timestamp, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessCommandLine
