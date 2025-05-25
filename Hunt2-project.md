@@ -63,23 +63,21 @@ DeviceProcessEvents
 
 ---
 
-### 3. Searched the `DeviceProcessEvents` Table for TOR Browser Execution
+### 3. Traced Follow-up Execution from CMD to PowerShell
 
-Searched the DeviceProcessEvents table for any indication that user “thelab” actually opened the tor browser. There was evidence that they did open it at 2025-04-27T16:51:41.4899266Z
-There were several other instances of firefox.exe (tor) as well as tor.exe spawned afterwards
+Confirmed that powershell.exe was launched via the cmd.exe session initiated by PsExec, continuing the attacker’s activity chain.
 
 **Query used to locate events:**
 
 ```kql
-let VMName = "sjsentinel";
 DeviceProcessEvents
-| where DeviceName == "sjsentinel"
-| where FileName has_any ("tor.exe", "start-tor-browser.exe", "tor-browser.exe", "tor-browser-win64.exe", "tor-browser-win32.exe", "tor-browser-windows-x86_64-portable-14.5.exe", "Tor Browser Setup.exe", "firefox.exe", "PluggableTransportPlugin.exe")
-| order by Timestamp desc
-| project FileName, DeviceName, AccountName, FolderPath, ProcessCommandLine, ActionType, Timestamp, SHA256
+| where DeviceName == "sjpay2"
+| where InitiatingProcessFileName == "cmd.exe"
+| project Timestamp, FileName, ProcessCommandLine, AccountName, InitiatingProcessFileName
 
 ```
-![image](https://github.com/user-attachments/assets/40102780-44de-4483-b310-d09cbe03c2a5)
+![image](https://github.com/user-attachments/assets/75f97e74-4282-4231-aeaf-b0edfcd49bd9)
+
 
 ---
 
