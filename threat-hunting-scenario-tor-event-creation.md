@@ -78,7 +78,9 @@ DeviceNetworkEvents
 | where InitiatingProcessAccountName != "system"
 | where RemotePort in (9001, 9050, 9150, 9051, 9040, 9030)
 
-
+// User shopping list was created and, changed, or deleted
+DeviceFileEvents
+| where FileName contains "shopping-list.txt"
 ---
 
 ## Created By:
