@@ -28,45 +28,44 @@
 ## Related Queries:
 
 ```kql
-// Step 1: PsExec Execution
+// Step 1: Detect Execution of PsExec and Its Service Component
 DeviceProcessEvents
 | where DeviceName == "sjpay2"
 | where FileName in~ ("PsExec.exe", "psexesvc.exe")
 | project Timestamp, FileName, ProcessCommandLine, DeviceName, AccountName
 
-// Step 2: Cmd.exe launched via PsExec
+// Step 2: Identify the Initial Process Spawned by PsExec
 DeviceProcessEvents
 | where DeviceName == "sjpay2"
 | where InitiatingProcessFileName == "psexesvc.exe"
-| where FileName == "cmd.exe"
 | project Timestamp, FileName, ProcessCommandLine, AccountName, InitiatingProcessFileName
 
-// Step 3: Powershell launched via cmd.exe
+// Step 3: Investigate Follow-on Processes Launched from cmd.exe
 DeviceProcessEvents
 | where DeviceName == "sjpay2"
 | where InitiatingProcessFileName == "cmd.exe"
-| where FileName == "powershell.exe"
-| project Timestamp, FileName, ProcessCommandLine, AccountName
+| project Timestamp, FileName, ProcessCommandLine, AccountName, InitiatingProcessFileName
 
-// Step 4: Attempted file creation by PowerShell
+// Step 4: Search for File Creation Attempt by PowerShell
 DeviceFileEvents
 | where DeviceName == "sjpay2"
 | where FileName == "psexec_logged.txt"
 | project Timestamp, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessCommandLine
 
-// Step 5: Broad FileActivity filter by folder for confirmation
+// Step 5: View All File Events Within Public Directory for Context
 DeviceFileEvents
 | where DeviceName == "sjpay2"
 | where FolderPath has "Public"
-| project Timestamp, FileName, FolderPath, InitiatingProcessFileName
+| project Timestamp, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessCommandLine
+
 
 
 ---
 
 ## Created By:
-- **Author Name**: Josh Madakor
-- **Author Contact**: https://www.linkedin.com/in/joshmadakor/
-- **Date**: August 31, 2024
+- **Author Name**: Semaj Jones
+- **Author Contact**: www.linkedin.com/in/semajjames128
+- **Date**: May 25, 2025
 
 ## Validated By:
 - **Reviewer Name**: 
@@ -83,4 +82,4 @@ DeviceFileEvents
 ## Revision History:
 | **Version** | **Changes**                   | **Date**         | **Modified By**   |
 |-------------|-------------------------------|------------------|-------------------|
-| 1.0         | Initial draft                  | `September  6, 2024`  | `Josh Madakor`   
+| 1.0         | Initial draft                  | `May  25, 2025`  | `Semaj Jones`   
