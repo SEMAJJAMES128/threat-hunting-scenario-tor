@@ -101,33 +101,29 @@ DeviceFileEvents
 
 ## Chronological Event Timeline 
 
-🟩 Step 1: PsExec Download and Execution
+🟩 Step 1: 
 
 PsExec.exe was executed on host sjpay2 to simulate lateral movement using the command:
-
 PsExec.exe \\localhost cmd.exe
-
 Microsoft Defender for Endpoint logged the execution of PsExec.exe and its service psexesvc.exe.
 
-🟩 Step 2: PsExec Service Spawned Remote Shell
+🟩 Step 2: 
 
 psexesvc.exe launched a new instance of cmd.exe on the same device (sjpay2).
 This shell ran with elevated privileges, simulating post-exploitation access.
 
-🟩 Step 3: CMD Launched PowerShell
+🟩 Step 3: 
 
 Within the remote shell session, cmd.exe launched powershell.exe, continuing the chain of execution.
 PowerShell was used to run attacker-simulated commands.
 
-🟨 Step 4: Attempted File Drop via PowerShell
+🟨 Step 4: 
 
 Inside the PowerShell session, the following command was executed:
-
 Set-Content -Path "C:\Users\Public\psexec_logged.txt" -Value "test"
-
 The file was confirmed to exist on disk in C:\Users\Public, indicating successful file creation from the attacker’s perspective.
 
-🟥 Step 5: File Creation Not Logged by Defender
+🟥 Step 5:
 
 Querying DeviceFileEvents for the expected .txt file yielded no results.
 This highlights a potential telemetry gap where non-malicious file creations through remote shells may go unlogged unless flagged or audited explicitly.
