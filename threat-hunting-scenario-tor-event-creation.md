@@ -88,17 +88,6 @@ DeviceFileEvents
 - **Author Contact**: www.linkedin.com/in/semajjames128
 - **Date**: May 1, 2025
 
-## Validated By:
-- **Reviewer Name**: 
-- **Reviewer Contact**: 
-- **Validation Date**: 
-
----
-
-## Additional Notes:
-- **None**
-
----
 
 ## Revision History:
 | **Version** | **Changes**                   | **Date**         | **Modified By**   |
