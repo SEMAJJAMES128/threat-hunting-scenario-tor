@@ -26,7 +26,7 @@ The goal of this hunt is to validate the presence of lateral movement techniques
 
 ## Steps Taken
 
-### 1. Searched the `DeviceFileEvents` Table
+### 1. Searched the `DeviceProcessEvents` Table for PsExec Execution
 
 I performed an advanced hunting query focused on the device "sjsentinel", filtering the DeviceFileEvents table for files with names containing "tor" or "firefox", executed by the user account "thelab." The search was further refined to events occurring after 2025-04-27T16:48:38Z, with results sorted by file size. Key details such as file name, SHA256 hash, action type, and folder path were extracted to support the investigation and inform potential incident creation. There was also a creation of a file called “tor-shopping-list.txt” at 2025-04-27T17:04:09.4108282Z.
 
