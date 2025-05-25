@@ -1,58 +1,87 @@
-# Threat Event (Simulated Lateral Movement via PsExec)
-**Process-Based Lateral Movement and File Drop Simulation Using PsExec**
+# Threat Event (Unauthorized TOR Usage)
+**Unauthorized TOR Browser Installation and Use**
 
-## Steps the "Bad Actor" Took to Create Logs and IoCs:
-1. Downloaded and executed `PsExec.exe` from the Sysinternals suite.
-2. Ran the following command to simulate lateral movement:  
-   `PsExec.exe \\localhost cmd.exe`
-3. From the PsExec-launched `cmd.exe` shell, launched `powershell.exe`.
-4. Inside the PowerShell session, executed a file creation command:  
-   `Set-Content -Path "C:\Users\Public\psexec_logged.txt" -Value "test"`
-5. The file was successfully written to disk, but Defender for Endpoint did **not log** the file creation.
+## Steps the "Bad Actor" took Create Logs and IoCs:
+1. Download the TOR browser installer: https://www.torproject.org/download/
+2. Install it silently: ```tor-browser-windows-x86_64-portable-14.0.1.exe /S```
+3. Opens the TOR browser from the folder on the desktop
+4. Connect to TOR and browse a few sites. For example:
+   - **WARNING: The links to onion sites change a lot and these have changed. However if you connect to Tor and browse around normal sites a bit, the necessary logs should still be created:**
+   - Current Dread Forum: ```dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion```
+   - Dark Markets Forum: ```dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion/d/DarkNetMarkets```
+   - Current Elysium Market: ```elysiumutkwscnmdohj23gkcyp3ebrf4iio3sngc5tvcgyfp4nqqmwad.top/login```
+
+6. Create a folder on your desktop called ```tor-shopping-list.txt``` and put a few fake (illicit) items in there
+7. Delete the file.
 
 ---
 
 ## Tables Used to Detect IoCs:
 | **Parameter**       | **Description**                                                              |
 |---------------------|------------------------------------------------------------------------------|
-| **DeviceProcessEvents** | Detected the execution of PsExec, the `psexesvc.exe` service, `cmd.exe`, and PowerShell. |
-| **DeviceFileEvents** | Searched for evidence of file creation in `C:\Users\Public`. Although the file was confirmed manually, the action was not logged in this table. |
+| **Name**| DeviceFileEvents|
+| **Info**|https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceinfo-table|
+| **Purpose**| Used for detecting TOR download and installation, as well as the shopping list creation and deletion. |
+
+| **Parameter**       | **Description**                                                              |
+|---------------------|------------------------------------------------------------------------------|
+| **Name**| DeviceProcessEvents|
+| **Info**|https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceinfo-table|
+| **Purpose**| Used to detect the silent installation of TOR as well as the TOR browser and service launching.|
+
+| **Parameter**       | **Description**                                                              |
+|---------------------|------------------------------------------------------------------------------|
+| **Name**| DeviceNetworkEvents|
+| **Info**|https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicenetworkevents-table|
+| **Purpose**| Used to detect TOR network activity, specifically tor.exe and firefox.exe making connections over ports to be used by TOR (9001, 9030, 9040, 9050, 9051, 9150).|
 
 ---
 
 ## Related Queries:
-
 ```kql
-// Step 1: Detect Execution of PsExec and Its Service Component
-DeviceProcessEvents
-| where DeviceName == "sjpay2"
-| where FileName in~ ("PsExec.exe", "psexesvc.exe")
-| project Timestamp, FileName, ProcessCommandLine, DeviceName, AccountName
-
-// Step 2: Identify the Initial Process Spawned by PsExec
-DeviceProcessEvents
-| where DeviceName == "sjpay2"
-| where InitiatingProcessFileName == "psexesvc.exe"
-| project Timestamp, FileName, ProcessCommandLine, AccountName, InitiatingProcessFileName
-
-// Step 3: Investigate Follow-on Processes Launched from cmd.exe
-DeviceProcessEvents
-| where DeviceName == "sjpay2"
-| where InitiatingProcessFileName == "cmd.exe"
-| project Timestamp, FileName, ProcessCommandLine, AccountName, InitiatingProcessFileName
-
-// Step 4: Search for File Creation Attempt by PowerShell
+// Installer name == tor-browser-windows-x86_64-portable-(version).exe
+// Detect the installer being downloaded
+let VMName = "sjsentinel";
 DeviceFileEvents
-| where DeviceName == "sjpay2"
-| where FileName == "psexec_logged.txt"
-| project Timestamp, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessCommandLine
+| where DeviceName == "sjsentinel"
+| where FileName has_any ("tor" , "firefox")
+| where InitiatingProcessAccountName == "thelab"
+| where Timestamp >= datetime(2025-04-27T16:48:38.7199014Z)
+| order by FileSize desc
+| project FileName, InitiatingProcessAccountName, Timestamp, SHA256, DeviceName, ActionType, FolderPath, Account = InitiatingProcessAccountName
 
-// Step 5: View All File Events Within Public Directory for Context
+
+// TOR Browser being silently installed
+
+let VMName = "sjsentinel";
+DeviceProcessEvents
+| where DeviceName == "sjsentinel"
+| where ProcessCommandLine has "tor-browser-windows-x86_64-portable-14.5.exe  /S"
+| project Timestamp, ActionType, FileName, FolderPath, SHA256, ProcessCommandLine, AccountName
+
+
+// TOR Browser or service was successfully installed and is present on the disk
 DeviceFileEvents
-| where DeviceName == "sjpay2"
-| where FolderPath has "Public"
-| project Timestamp, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessCommandLine
+let VMName = "sjsentinel";
+DeviceProcessEvents
+| where DeviceName == "sjsentinel"
+| where FileName has_any ("tor.exe", "start-tor-browser.exe", "tor-browser.exe", "tor-browser-win64.exe", "tor-browser-win32.exe", "tor-browser-windows-x86_64-portable-14.5.exe", "Tor Browser Setup.exe", "firefox.exe",
 
+
+// TOR Browser or service is being used and is actively creating network connections
+let VMName = "sjsentinel";
+DeviceNetworkEvents
+| where DeviceName == "sjsentinel"
+| project Timestamp, InitiatingProcessAccountName, DeviceName, ActionType, RemoteIP, RemotePort, RemoteUrl, InitiatingProcessFolderPath,InitiatingProcessFileName
+| order by Timestamp desc 
+| where ActionType == "ConnectionSuccess"
+| where InitiatingProcessAccountName != "system"
+| where RemotePort in (9001, 9050, 9150, 9051, 9040, 9030)
+
+// User shopping list was created and, changed, or deleted
+DeviceFileEvents
+| where FileName contains "shopping-list.txt"
+---
 
 ## Created By:
 - **Author Name**: Semaj Jones
