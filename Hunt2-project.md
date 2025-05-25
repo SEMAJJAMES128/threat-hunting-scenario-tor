@@ -16,11 +16,11 @@ Security noticed an unusual command-line pattern on a lab system suggesting remo
 The goal of this hunt is to validate the presence of lateral movement techniques using PsExec, confirm chained execution activity, and assess visibility into file creation from remote shells.
 
 
-### High-Level TOR-Related IoC Discovery Plan
+### High-Level PsExec-Related IoC Discovery Plan
 
-- **Check `DeviceFileEvents`** for any `tor(.exe)` or `firefox(.exe)` file events.
-- **Check `DeviceProcessEvents`** for any signs of installation or usage.
-- **Check `DeviceNetworkEvents`** for any signs of outgoing connections over known TOR ports.
+- **Check `DeviceProcessEvents`** for execution of `PsExec.exe` and `psexesvc.exe`.
+- **Trace process lineage from `psexesvc.exe` → `cmd.exe` → `powershell.exe`.**
+- **Use `DeviceFileEvents` to determine whether files were created via the PsExec-launched session.**
 
 ---
 
