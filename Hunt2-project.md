@@ -39,7 +39,7 @@ DeviceProcessEvents
 | project FileName, ProcessCommandLine, DeviceName, DeviceId
 
 ```
-![image](![image](https://github.com/user-attachments/assets/4af48c04-ee01-44a4-a4e0-0664e6728aac))"
+![image](https://github.com/user-attachments/assets/4af48c04-ee01-44a4-a4e0-0664e6728aac)"
 
 ---
 
