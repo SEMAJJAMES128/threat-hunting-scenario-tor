@@ -8,11 +8,13 @@
 - Windows 10 Virtual Machines (Microsoft Azure)
 - EDR Platform: Microsoft Defender for Endpoint
 - Kusto Query Language (KQL)
-- PSExec
+- PSExec (Sysinternals Suite)
 
 ##  Scenario
 
-Management suspects that some employees may be using TOR browsers to bypass network security controls because recent network logs show unusual encrypted traffic patterns and connections to known TOR entry nodes. Additionally, there have been anonymous reports of employees discussing ways to access restricted sites during work hours. The goal is to detect any TOR usage and analyze related security incidents to mitigate potential risks. If any use of TOR is found, notify management.
+Security noticed an unusual command-line pattern on a lab system suggesting remote code execution activity. Suspicion grew after audit logs revealed system-level process spawns without standard user interaction. Management requested a threat hunt to determine whether tools like PsExec were being used to establish unauthorized remote shells, spawn PowerShell sessions, or create untracked files.
+The goal of this hunt is to validate the presence of lateral movement techniques using PsExec, confirm chained execution activity, and assess visibility into file creation from remote shells.
+
 
 ### High-Level TOR-Related IoC Discovery Plan
 
