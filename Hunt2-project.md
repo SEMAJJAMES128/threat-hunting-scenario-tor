@@ -33,17 +33,13 @@ Queried for known PsExec binaries (`PsExec.exe`, `psexesvc.exe`) to confirm exec
 **Query used to locate events:**
 
 ```kql
-let VMName = "sjsentinel";
-DeviceFileEvents
-| where DeviceName == "sjsentinel"
-| where FileName has_any ("tor" , "firefox")
-| where InitiatingProcessAccountName == "thelab"
-| where Timestamp >= datetime(2025-04-27T16:48:38.7199014Z)
-| order by FileSize desc
-| project FileName, InitiatingProcessAccountName, Timestamp, SHA256, DeviceName, ActionType, FolderPath, Account = InitiatingProcessAccountName
+DeviceProcessEvents
+| where DeviceName == "sjpay2"
+| where FileName in~ ("PsExec.exe", "psexesvc.exe")
+| project FileName, ProcessCommandLine, DeviceName, DeviceId
 
 ```
-![image](https://github.com/user-attachments/assets/5d60715d-f648-4b1d-9191-d11e7cff097f)"
+![image](![image](https://github.com/user-attachments/assets/4af48c04-ee01-44a4-a4e0-0664e6728aac))"
 
 ---
 
