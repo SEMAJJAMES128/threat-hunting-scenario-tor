@@ -13,10 +13,20 @@
 ---
 
 ## Tables Used to Detect IoCs:
-| **Parameter**       | **Description**                                                              |
-|---------------------|------------------------------------------------------------------------------|
-| **DeviceProcessEvents** | Detected the execution of PsExec, the `psexesvc.exe` service, `cmd.exe`, and PowerShell. |
-| **DeviceFileEvents** | Searched for evidence of file creation in `C:\Users\Public`. Although the file was confirmed manually, the action was not logged in this table. |
+
+| Parameter | Description |
+|----------|-------------|
+| **Name** | `DeviceProcessEvents` |
+| **Info** | [https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceprocessevents-table](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceprocessevents-table) |
+| **Purpose** | Used to detect the execution of `PsExec.exe`, the deployment of `psexesvc.exe`, and subsequent process activity such as `cmd.exe` and `powershell.exe` launched via PsExec. |
+
+<br/>
+
+| Parameter | Description |
+|----------|-------------|
+| **Name** | `DeviceFileEvents` |
+| **Info** | [https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicefileevents-table](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicefileevents-table) |
+| **Purpose** | Used to detect any files created as a result of remote shell activity. In this case, a `.txt` file was created via PowerShell but was not logged — highlighting a visibility gap in benign file creation events. |
 
 ---
 
