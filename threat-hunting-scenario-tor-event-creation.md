@@ -75,13 +75,23 @@ DeviceFileEvents
 ---
 
 ## Created By:
-- **Author Name**: Semaj Jones
-- **Author Contact**: https://www.linkedin.com/in/semajjames128
-- **Date**: 04/29/2025
+- **Author Name**: Josh Madakor
+- **Author Contact**: https://www.linkedin.com/in/joshmadakor/
+- **Date**: August 31, 2024
+
+## Validated By:
+- **Reviewer Name**: 
+- **Reviewer Contact**: 
+- **Validation Date**: 
+
+---
+
+## Additional Notes:
+- **None**
 
 ---
 
 ## Revision History:
 | **Version** | **Changes**                   | **Date**         | **Modified By**   |
 |-------------|-------------------------------|------------------|-------------------|
-| 2.0         | Final Project                 | `April  29, 2025`  | `Semaj Jones`   
+| 1.0         | Initial draft                  | `September  6, 2024`  | `Josh Madakor`   
