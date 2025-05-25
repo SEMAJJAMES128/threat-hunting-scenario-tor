@@ -1,14 +1,14 @@
 ![image](https://github.com/user-attachments/assets/c8ff4936-5fc7-4ca9-8917-59d110269b7e)
 
 
-# Threat Hunt Report: Unauthorized TOR Usage
+# Threat Hunt Report: Unauthorized Remote Execution via PsExec
 - [Scenario Creation](https://github.com/SEMAJJAMES128/threat-hunting-scenario-tor/blob/main/Hunt2.md)
 
 ## Platforms and Languages Leveraged
 - Windows 10 Virtual Machines (Microsoft Azure)
 - EDR Platform: Microsoft Defender for Endpoint
 - Kusto Query Language (KQL)
-- Tor Browser
+- PS Exec
 
 ##  Scenario
 
