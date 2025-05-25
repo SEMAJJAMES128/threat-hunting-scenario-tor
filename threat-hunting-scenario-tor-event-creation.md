@@ -1,76 +1,65 @@
-# Threat Event (Unauthorized TOR Usage)
-**Unauthorized TOR Browser Installation and Use**
+# Threat Event (Unauthorized Remote Execution via PsExec)
+**PsExec Usage for Lateral Movement and Post-Exploitation Simulation**
 
-## Steps the "Bad Actor" took Create Logs and IoCs:
-1. Download the TOR browser installer: https://www.torproject.org/download/
-2. Install it silently: ```tor-browser-windows-x86_64-portable-14.0.1.exe /S```
-3. Opens the TOR browser from the folder on the desktop
-4. Connect to TOR and browse a few sites. For example:
-   - **WARNING: The links to onion sites change a lot and these have changed. However if you connect to Tor and browse around normal sites a bit, the necessary logs should still be created:**
-   - Current Dread Forum: ```dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion```
-   - Dark Markets Forum: ```dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion/d/DarkNetMarkets```
-   - Current Elysium Market: ```elysiumutkwscnmdohj23gkcyp3ebrf4iio3sngc5tvcgyfp4nqqmwad.top/login```
-
-6. Create a folder on your desktop called ```tor-shopping-list.txt``` and put a few fake (illicit) items in there
-7. Delete the file.
+## Steps the "Bad Actor" Took to Create Logs and IoCs:
+1. Downloaded and extracted PsExec from Sysinternals suite.
+2. Launched PsExec with `\\localhost cmd.exe` to simulate remote shell access.
+3. From the remote shell, attempted to run PowerShell and create files in `C:\Users\Public\`.
+4. Created a file called `psexec_logged.txt` (file appeared on disk, but was not logged).
+5. Validated all command execution using Microsoft Defender for Endpoint (MDE) telemetry.
 
 ---
 
 ## Tables Used to Detect IoCs:
 | **Parameter**       | **Description**                                                              |
 |---------------------|------------------------------------------------------------------------------|
-| **Name**| DeviceFileEvents|
-| **Info**|https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceinfo-table|
-| **Purpose**| Used for detecting TOR download and installation, as well as the shopping list creation and deletion. |
+| **Name**            | DeviceProcessEvents                                                         |
+| **Info**            | https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceprocessevents-table |
+| **Purpose**         | Used to detect PsExec execution, command shell creation, and PowerShell activity.|
 
 | **Parameter**       | **Description**                                                              |
 |---------------------|------------------------------------------------------------------------------|
-| **Name**| DeviceProcessEvents|
-| **Info**|https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceinfo-table|
-| **Purpose**| Used to detect the silent installation of TOR as well as the TOR browser and service launching.|
-
-| **Parameter**       | **Description**                                                              |
-|---------------------|------------------------------------------------------------------------------|
-| **Name**| DeviceNetworkEvents|
-| **Info**|https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicenetworkevents-table|
-| **Purpose**| Used to detect TOR network activity, specifically tor.exe and firefox.exe making connections over ports to be used by TOR (9001, 9030, 9040, 9050, 9051, 9150).|
+| **Name**            | DeviceFileEvents                                                            |
+| **Info**            | https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicefileevents-table |
+| **Purpose**         | Intended to detect file creation attempts made from the remote shell session. (Note: file creation was not logged.)|
 
 ---
 
 ## Related Queries:
+
 ```kql
-// Installer name == tor-browser-windows-x86_64-portable-(version).exe
-// Detect the installer being downloaded
-DeviceFileEvents
-| where FileName startswith "tor"
-
-// TOR Browser being silently installed
-// Take note of two spaces before the /S (I don't know why)
+// Step 1: PsExec Execution
 DeviceProcessEvents
-| where ProcessCommandLine contains "tor-browser-windows-x86_64-portable-14.0.1.exe  /S"
-| project Timestamp, DeviceName, ActionType, FileName, ProcessCommandLine
+| where DeviceName == "sjpay2"
+| where FileName in~ ("PsExec.exe", "psexesvc.exe")
+| project Timestamp, FileName, ProcessCommandLine, DeviceName, AccountName
 
-// TOR Browser or service was successfully installed and is present on the disk
-DeviceFileEvents
-| where FileName has_any ("tor.exe", "firefox.exe")
-| project  Timestamp, DeviceName, RequestAccountName, ActionType, InitiatingProcessCommandLine
-
-// TOR Browser or service was launched
+// Step 2: Cmd.exe launched via PsExec
 DeviceProcessEvents
-| where ProcessCommandLine has_any("tor.exe","firefox.exe")
-| project  Timestamp, DeviceName, AccountName, ActionType, ProcessCommandLine
+| where DeviceName == "sjpay2"
+| where InitiatingProcessFileName == "psexesvc.exe"
+| where FileName == "cmd.exe"
+| project Timestamp, FileName, ProcessCommandLine, AccountName, InitiatingProcessFileName
 
-// TOR Browser or service is being used and is actively creating network connections
-DeviceNetworkEvents
-| where InitiatingProcessFileName in~ ("tor.exe", "firefox.exe")
-| where RemotePort in (9001, 9030, 9040, 9050, 9051, 9150)
-| project Timestamp, DeviceName, InitiatingProcessAccountName, InitiatingProcessFileName, RemoteIP, RemotePort, RemoteUrl
-| order by Timestamp desc
+// Step 3: Powershell launched via cmd.exe
+DeviceProcessEvents
+| where DeviceName == "sjpay2"
+| where InitiatingProcessFileName == "cmd.exe"
+| where FileName == "powershell.exe"
+| project Timestamp, FileName, ProcessCommandLine, AccountName
 
-// User shopping list was created and, changed, or deleted
+// Step 4: Attempted file creation by PowerShell
 DeviceFileEvents
-| where FileName contains "shopping-list.txt"
-```
+| where DeviceName == "sjpay2"
+| where FileName == "psexec_logged.txt"
+| project Timestamp, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessCommandLine
+
+// Step 5: Broad FileActivity filter by folder for confirmation
+DeviceFileEvents
+| where DeviceName == "sjpay2"
+| where FolderPath has "Public"
+| project Timestamp, FileName, FolderPath, InitiatingProcessFileName
+
 
 ---
 
