@@ -3,11 +3,15 @@
 
 ## Steps the "Bad Actor" Took to Create Logs and IoCs:
 1. Downloaded and executed `PsExec.exe` from the Sysinternals suite.
+
 2. Ran the following command to simulate lateral movement:  
    `PsExec.exe \\localhost cmd.exe`
+
 3. From the PsExec-launched `cmd.exe` shell, launched `powershell.exe`.
+
 4. Inside the PowerShell session, executed a file creation command:  
    `Set-Content -Path "C:\Users\Public\psexec_logged.txt" -Value "test"`
+
 5. The file was successfully written to disk, but Defender for Endpoint did **not log** the file creation.
 
 ---
